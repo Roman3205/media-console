@@ -2,10 +2,11 @@
 import { RouterView, useRouter } from 'vue-router'
 import { useMutation } from '@vue/apollo-composable'
 import { LOGOUT_MUTATION } from './graphql/operations'
-import { currentUser, isLoggedIn, isCheckingAuth } from './utils/authStore'
+import { useAuthStore } from './stores/auth'
 import { restartWebsocket } from './apollo'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const { mutate: logoutMutate } = useMutation(LOGOUT_MUTATION)
 
@@ -15,7 +16,7 @@ const handleLogout = async () => {
   } catch (err) {
     console.error('Logout error:', err)
   } finally {
-    currentUser.value = null
+    authStore.currentUser = null
     restartWebsocket()
     router.push({ name: 'auth' })
   }
@@ -33,17 +34,17 @@ const handleLogout = async () => {
         
         <div class="flex items-center gap-8">
           <div class="flex items-center gap-6">
-            <router-link to="/" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-950 font-bold">Feed</router-link>
-            <router-link v-if="isLoggedIn" to="/search" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-950 font-bold">Search</router-link>
-            <router-link v-if="isLoggedIn" to="/dashboard" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-950 font-bold">Dashboard</router-link>
+            <router-link to="/" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-955 font-bold">Feed</router-link>
+            <router-link v-if="authStore.isLoggedIn" to="/search" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-955 font-bold">Search</router-link>
+            <router-link v-if="authStore.isLoggedIn" to="/dashboard" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 transition-colors uppercase tracking-wider" exact-active-class="text-zinc-955 font-bold">Dashboard</router-link>
           </div>
           
           <div class="flex items-center gap-4">
-            <span v-if="isLoggedIn && currentUser" class="hidden sm:inline-flex bg-zinc-100 text-zinc-700 px-3 py-1 rounded-md text-xs font-semibold">
-              {{ currentUser.name }}
+            <span v-if="authStore.isLoggedIn && authStore.currentUser" class="hidden sm:inline-flex bg-zinc-100 text-zinc-700 px-3 py-1 rounded-md text-xs font-semibold">
+              {{ authStore.currentUser.name }}
             </span>
             <button 
-              v-if="isLoggedIn" 
+              v-if="authStore.isLoggedIn" 
               @click="handleLogout" 
               class="text-xs font-semibold text-zinc-400 hover:text-zinc-900 transition-colors cursor-pointer uppercase tracking-wider"
             >
@@ -65,7 +66,7 @@ const handleLogout = async () => {
       <RouterView />
     </main>
 
-    <div v-if="isCheckingAuth" class="fixed inset-0 z-[9999] bg-white/40 backdrop-blur-[1px] cursor-not-allowed flex items-center justify-center">
+    <div v-if="authStore.isCheckingAuth" class="fixed inset-0 z-[9999] bg-white/40 backdrop-blur-[1px] cursor-not-allowed flex items-center justify-center">
       <div class="bg-white rounded-xl p-4 shadow-lg border border-zinc-200/60 flex items-center gap-3">
         <span class="w-4 h-4 border-2 border-zinc-800 border-l-transparent rounded-full animate-spin"></span>
         <span class="text-xs font-semibold text-zinc-800 uppercase tracking-wider">Verifying authentication...</span>

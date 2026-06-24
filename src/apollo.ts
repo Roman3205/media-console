@@ -3,7 +3,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { onError } from '@apollo/client/link/error'
-import { currentUser } from './utils/authStore'
+import { useAuthStore } from './stores/auth'
 
 import type { Router } from 'vue-router'
 
@@ -25,7 +25,8 @@ const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
     for (const err of graphQLErrors) {
       if (err.extensions?.code === 'UNAUTHENTICATED') {
-        currentUser.value = null
+        const authStore = useAuthStore()
+        authStore.currentUser = null
 
         if (routerInstance && routerInstance.currentRoute.value.meta.requiresAuth) {
           routerInstance.push({ name: 'auth' })

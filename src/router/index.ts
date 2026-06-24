@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { apolloClient } from '../apollo'
 import { ME_QUERY } from '../graphql/operations'
-import { currentUser, isCheckingAuth } from '../utils/authStore'
+import { useAuthStore } from '../stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,9 +39,10 @@ const router = createRouter({
 let hasCheckedInitialAuth = false
 
 router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
   if (!hasCheckedInitialAuth) {
     hasCheckedInitialAuth = true
-    isCheckingAuth.value = true
+    authStore.isCheckingAuth = true
     try {
       const response = await apolloClient.query({
         query: ME_QUERY,
@@ -49,20 +50,20 @@ router.beforeEach(async (to, from, next) => {
       })
       
       if (response.data?.me) {
-        currentUser.value = response.data.me
+        authStore.currentUser = response.data.me
       }
     } catch {
-      currentUser.value = null
+      authStore.currentUser = null
     } finally {
-      isCheckingAuth.value = false
+      authStore.isCheckingAuth = false
     }
   }
 
-  if (to.meta.requiresAuth && !currentUser.value) {
+  if (to.meta.requiresAuth && !authStore.currentUser) {
     return next({ name: 'auth' })
   }
 
-  if (to.name === 'auth' && currentUser.value) {
+  if (to.name === 'auth' && authStore.currentUser) {
     return next({ name: 'dashboard' })
   }
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useLazyQuery } from '@vue/apollo-composable'
-import { SEARCH_QUERY } from '../graphql/operations'
+import { SEARCH_QUERY } from '@/graphql/operations'
 
 const searchQuery = ref('')
 const searchAttempted = ref(false)

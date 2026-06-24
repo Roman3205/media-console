@@ -8,9 +8,8 @@ import {
   DELETE_POST_MUTATION,
   CREATE_ARTICLE_MUTATION,
   TAGS_QUERY
-} from '../graphql/operations'
-
-import type { DashboardPost, DashboardData } from '../types'
+} from '@/graphql/operations'
+import type { DashboardPost, DashboardData } from '@/types'
 
 const activeTab = ref('posts')
 

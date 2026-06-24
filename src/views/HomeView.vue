@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
-import { POSTS_QUERY, CATEGORIES_QUERY, POST_CREATED_SUBSCRIPTION } from '../graphql/operations'
+import { POSTS_QUERY, CATEGORIES_QUERY, POST_CREATED_SUBSCRIPTION } from '@/graphql/operations'
+import type { PostEdge, PostsQueryData, PostCreatedSubscriptionData } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 
-import type { PostEdge, PostsQueryData, PostCreatedSubscriptionData } from '../types'
-import { currentUser } from '../utils/authStore'
+const authStore = useAuthStore()
 
 const { result: postsResult, loading: postsLoading, error: postsError, fetchMore, subscribeToMore } = useQuery<PostsQueryData>(
   POSTS_QUERY,
@@ -67,7 +68,7 @@ subscribeToMore<PostsQueryData, PostCreatedSubscriptionData>({
     if (exists) return previousResult
 
     // Show toast notifications only to other users/devices (author gets immediate list update)
-    if (!currentUser.value || String(newPost.author?.id) !== String(currentUser.value.id)) {
+    if (!authStore.currentUser || String(newPost.author?.id) !== String(authStore.currentUser.id)) {
       const id = toastIdSeq++
       toasts.value.push({
         id,

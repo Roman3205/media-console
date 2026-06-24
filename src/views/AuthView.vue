@@ -2,11 +2,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMutation } from '@vue/apollo-composable'
-import { LOGIN_MUTATION, SIGNUP_MUTATION } from '../graphql/operations'
-import { currentUser } from '../utils/authStore'
-import { restartWebsocket } from '../apollo'
+import { LOGIN_MUTATION, SIGNUP_MUTATION } from '@/graphql/operations'
+import { useAuthStore } from '@/stores/auth'
+import { restartWebsocket } from '@/apollo'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const isLogin = ref(true)
 
 const name = ref('')
@@ -35,7 +36,7 @@ const handleAuth = async () => {
       if (response?.data?.login) {
         const { user } = response.data.login
         
-        currentUser.value = user
+        authStore.currentUser = user
         restartWebsocket()
         
         router.push({ name: 'dashboard' })
@@ -59,7 +60,7 @@ const handleAuth = async () => {
       if (response?.data?.signup) {
         const { user } = response.data.signup
         
-        currentUser.value = user
+        authStore.currentUser = user
         restartWebsocket()
         
         router.push({ name: 'dashboard' })

@@ -2,12 +2,12 @@
 import { ref, computed, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuery, useMutation } from '@vue/apollo-composable'
-import { POST_QUERY, CREATE_COMMENT_MUTATION } from '../graphql/operations'
-
-import type { PostDetailData } from '../types'
-import { isLoggedIn } from '../utils/authStore'
+import { POST_QUERY, CREATE_COMMENT_MUTATION } from '@/graphql/operations'
+import type { PostDetailData } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
+const authStore = useAuthStore()
 const postId = ref(route.params.id as string)
 
 const commentBody = ref('')
@@ -126,7 +126,7 @@ const handleAddComment = async () => {
           </h1>
 
           <div class="flex items-center gap-3 pt-2">
-            <div class="h-8 w-8 bg-zinc-100 border border-zinc-d200 rounded-md flex items-center justify-center font-heading font-extrabold text-xs text-zinc-800 uppercase">
+            <div class="h-8 w-8 bg-zinc-100 border border-zinc-200 rounded-md flex items-center justify-center font-heading font-extrabold text-xs text-zinc-800 uppercase">
               {{ post.author?.name ? post.author.name.charAt(0).toUpperCase() : 'A' }}
             </div>
             <div class="text-xs">
@@ -169,7 +169,7 @@ const handleAddComment = async () => {
         <div class="bg-zinc-50 rounded-xl border border-zinc-100 p-5 space-y-4">
           <h4 class="font-heading font-bold text-xs text-zinc-800 uppercase tracking-wider">Join discussion</h4>
           
-          <div v-if="isLoggedIn" class="space-y-4">
+          <div v-if="authStore.isLoggedIn" class="space-y-4">
             <div v-if="successMsg" class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs py-2 px-3 rounded-lg text-center font-medium">{{ successMsg }}</div>
             <div v-if="errorMsg" class="bg-rose-50 text-rose-700 border border-rose-100 text-xs py-2 px-3 rounded-lg text-center font-medium">{{ errorMsg }}</div>
 
