@@ -120,7 +120,6 @@ subscribeToMore<PostsQueryData, PostCreatedSubscriptionData>({
             </li>
           </ul>
         </div>
-
         <div class="bg-white rounded-xl p-5 border border-zinc-200/60 space-y-4">
           <h3 class="font-heading font-bold text-zinc-400 text-xs tracking-wider uppercase">Live Stats</h3>
           <div class="space-y-2 text-xs">
@@ -131,10 +130,17 @@ subscribeToMore<PostsQueryData, PostCreatedSubscriptionData>({
             <div class="flex justify-between items-center">
               <span class="text-zinc-400">Feed Status:</span>
               <span class="font-bold text-zinc-850 flex items-center gap-1.5">
-                Live
+                <span v-if="!postsLoading">Live</span>
+                <span v-else-if="postsError">Not live</span>
                 <span class="relative flex h-1.5 w-1.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  <span class="absolute inline-flex h-full w-full rounded-full opacity-75" :class="{
+                    'bg-emerald-400 animate-ping': !postsLoading,
+                    'bg-red-600': postsError
+                  }"></span>
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5" :class="{
+                    'bg-emerald-400': !postsLoading,
+                    'bg-red-600': postsError
+                  }"></span>
                 </span>
               </span>
             </div>

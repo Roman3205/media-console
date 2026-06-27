@@ -44,6 +44,7 @@ const handleLogout = async () => {
               {{ authStore.currentUser.name }}
             </span>
             <button 
+              type="button"
               v-if="authStore.isLoggedIn" 
               @click="handleLogout" 
               class="text-xs font-semibold text-zinc-400 hover:text-zinc-900 transition-colors cursor-pointer uppercase tracking-wider"
